@@ -8,6 +8,7 @@ import adminRoutes from "@/routes/admin.routes";
 
 import profileRoutes from "@/routes/profile.routes";
 
+
 const router = Router();
 
 router.use("/auth", authRoutes);

@@ -1,46 +1,35 @@
 import { Router } from "express";
 
 import {
-  getAllComplaintsAdminController,
-  getAllUsersController,
-  getDashboardStatsController,
+  getAllComplaintsController,
   updateComplaintStatusController,
+  getDashboardStatsController,
 } from "@/controllers/admin.controller";
-
-import { adminMiddleware } from "@/middlewares/admin.middleware";
 
 import { authMiddleware } from "@/middlewares/auth.middleware";
 
-import { validate } from "@/middlewares/validate.middleware";
+import { adminMiddleware } from "@/middlewares/admin.middleware";
 
-import { updateComplaintStatusValidation } from "@/validations/admin.validation";
 
 const router = Router();
 
-router.use(authMiddleware);
-
-router.use(adminMiddleware);
+router.use(
+  authMiddleware,
+  adminMiddleware
+);
 
 router.get(
-  "/dashboard-stats",
+  "/dashboard",
   getDashboardStatsController
 );
 
 router.get(
-  "/users",
-  getAllUsersController
-);
-
-router.get(
   "/complaints",
-  getAllComplaintsAdminController
+  getAllComplaintsController
 );
 
 router.patch(
-  "/complaints/:id/status",
-  validate(
-    updateComplaintStatusValidation
-  ),
+  "/complaints/:id",
   updateComplaintStatusController
 );
 

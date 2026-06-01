@@ -1,19 +1,6 @@
-import {
-  Request,
-  Response,
-} from "express";
+import { Request, Response } from "express";
 
-import {
-  getAllComplaintsAdminService,
-  getAllUsersService,
-  getDashboardStatsService,
-  updateComplaintStatusService,
-} from "@/services/admin.service";
-
-import {
-  errorResponse,
-  successResponse,
-} from "@/utils/response";
+import { prisma } from "@/config/prisma";
 
 export const getDashboardStatsController =
   async (
@@ -21,66 +8,103 @@ export const getDashboardStatsController =
     res: Response
   ) => {
     try {
-      const result =
-        await getDashboardStatsService();
+      const total =
+        await prisma.complaint.count();
 
-      return successResponse(
-        res,
-        "Dashboard stats fetched",
-        result
-      );
+      const pending =
+        await prisma.complaint.count(
+          {
+            where: {
+              status:
+                "PENDING",
+            },
+          }
+        );
+
+      const process =
+        await prisma.complaint.count(
+          {
+            where: {
+              status:
+                "PROCESS",
+            },
+          }
+        );
+
+      const completed =
+        await prisma.complaint.count(
+          {
+            where: {
+              status:
+                "COMPLETED",
+            },
+          }
+        );
+
+      const rejected =
+        await prisma.complaint.count(
+          {
+            where: {
+              status:
+                "REJECTED",
+            },
+          }
+        );
+
+      return res.status(200).json({
+        success: true,
+
+        data: {
+          total,
+          pending,
+          process,
+          completed,
+          rejected,
+        },
+      });
     } catch (error) {
-      return errorResponse(
-        res,
-        (error as Error).message,
-        400
-      );
+      console.log(error);
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Failed to get dashboard stats",
+      });
     }
   };
 
-export const getAllUsersController =
+export const getAllComplaintsController =
   async (
     req: Request,
     res: Response
   ) => {
     try {
-      const result =
-        await getAllUsersService();
+      const complaints =
+        await prisma.complaint.findMany(
+          {
+            include: {
+              user: true,
+            },
 
-      return successResponse(
-        res,
-        "Users fetched",
-        result
-      );
+            orderBy: {
+              createdAt:
+                "desc",
+            },
+          }
+        );
+
+      return res.status(200).json({
+        success: true,
+        data: complaints,
+      });
     } catch (error) {
-      return errorResponse(
-        res,
-        (error as Error).message,
-        400
-      );
-    }
-  };
+      console.log(error);
 
-export const getAllComplaintsAdminController =
-  async (
-    req: Request,
-    res: Response
-  ) => {
-    try {
-      const result =
-        await getAllComplaintsAdminService();
-
-      return successResponse(
-        res,
-        "Complaints fetched",
-        result
-      );
-    } catch (error) {
-      return errorResponse(
-        res,
-        (error as Error).message,
-        400
-      );
+      return res.status(500).json({
+        success: false,
+        message:
+          "Failed to get complaints",
+      });
     }
   };
 
@@ -90,22 +114,42 @@ export const updateComplaintStatusController =
     res: Response
   ) => {
     try {
-      const result =
-        await updateComplaintStatusService(
-          String(req.params.id),
-          req.body
+      const id = String(
+        req.params.id
+      );
+
+      const {
+        status,
+        adminResponse,
+      } = req.body;
+
+      const complaint =
+        await prisma.complaint.update(
+          {
+            where: {
+              id,
+            },
+
+            data: {
+              status,
+              adminResponse,
+            },
+          }
         );
 
-      return successResponse(
-        res,
-        "Complaint status updated",
-        result
-      );
+      return res.status(200).json({
+        success: true,
+        message:
+          "Complaint updated successfully",
+        data: complaint,
+      });
     } catch (error) {
-      return errorResponse(
-        res,
-        (error as Error).message,
-        400
-      );
+      console.log(error);
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Failed to update complaint",
+      });
     }
   };
