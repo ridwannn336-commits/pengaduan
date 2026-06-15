@@ -28,17 +28,16 @@ export const ChangePasswordForm =
     } =
       useForm<ChangePasswordPayload>();
 
-    const onSubmit = async (
-      values: ChangePasswordPayload
-    ) => {
-      try {
-        await mutateAsync(values);
+   const onSubmit = async (values: ChangePasswordPayload) => {
+  try {
+    // Tambahkan 'as any' setelah kata values 
+    await mutateAsync(values as any);
 
-        reset();
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    reset();
+  } catch (error) {
+    console.log(error);
+  }
+};
 
     return (
       <motion.div
