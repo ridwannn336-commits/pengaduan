@@ -41,7 +41,7 @@ export const ComplaintForm =
       try {
         await mutateAsync(values);
 
-        router.push("/dashboard");
+        router.push("/user/history");
       } catch (error) {
         console.log(error);
       }

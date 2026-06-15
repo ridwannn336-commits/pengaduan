@@ -45,6 +45,7 @@ export const updateProfileController =
     res: Response
   ) => {
     try {
+
       const result =
         await updateProfileService(
           req.user!.userId,
@@ -56,12 +57,15 @@ export const updateProfileController =
         "Profile updated",
         result
       );
+
     } catch (error) {
+
       return errorResponse(
         res,
         (error as Error).message,
         400
       );
+
     }
   };
 
@@ -90,3 +94,4 @@ export const changePasswordController =
       );
     }
   };
+  

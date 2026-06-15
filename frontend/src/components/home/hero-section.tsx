@@ -1,313 +1,256 @@
 "use client";
 
-import Link from "next/link";
+import {
+  useEffect,
+  useState,
+} from "react";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
+
+import {
+  getHomeData,
+} from "@/services/public.service";
+
+import {
+  Complaint,
+} from "@/types/admin.type";
 
 const images = [
   "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070",
-  "https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=2070",
-  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2070",
 ];
 
-export const HeroSection =
-  () => {
-    return (
-      <section
-        className="
-          relative
-          flex
-          min-h-screen
-          items-center
-          overflow-hidden
-        "
-      >
-        {/* BACKGROUND IMAGE */}
-        <div className="absolute inset-0">
-          <motion.div
-            animate={{
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 15,
-              repeat: Infinity,
-            }}
-            className="h-full w-full"
-          >
-            <img
-              src={images[0]}
-              alt="Village"
-              className="
-                h-full
-                w-full
-                object-cover
-              "
-            />
-          </motion.div>
+export const HeroSection = () => {
 
-          <div
-            className="
-              absolute
-              inset-0
-              bg-slate-950/70
-            "
-          />
+  const [
+    complaints,
+    setComplaints,
+  ] = useState<Complaint[]>([]);
 
-          <div
-            className="
-              absolute
-              inset-0
-              bg-gradient-to-r
-              from-slate-950
-              via-slate-950/70
-              to-transparent
-            "
-          />
-        </div>
+  useEffect(() => {
 
-        {/* CONTENT */}
-        <div
-          className="
-            relative
-            z-10
-            mx-auto
-            grid
-            max-w-7xl
-            gap-16
-            px-6
-            lg:grid-cols-2
-          "
-        >
-          {/* LEFT */}
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 40,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.5,
-            }}
-            className="
-              flex
-              flex-col
-              justify-center
-            "
-          >
-            <div
-              className="
-                mb-6
-                inline-flex
-                w-fit
-                items-center
-                rounded-full
-                border
-                border-blue-500/20
-                bg-blue-500/10
-                px-4
-                py-2
-                text-sm
-                text-blue-300
-                backdrop-blur-xl
-              "
-            >
-              🏛️ Sistem Pengaduan Desa Digital
-            </div>
+  const fetchComplaints =
+    async () => {
 
-            <h1
-              className="
-                text-5xl
-                font-black
-                leading-tight
-                text-white
-                lg:text-7xl
-              "
-            >
-              Welcome To{" "}
+      try {
+             const data =
+  await getHomeData();
 
-              <span className="text-blue-500">
-                Pengaduan
-              </span>{" "}
+console.log(
+  "HOME DATA",
+  data
+);
 
-              Desa
-            </h1>
+setComplaints(
+  data.complaints || []
+);
 
-            <p
-              className="
-                mt-6
-                max-w-xl
-                text-lg
-                leading-relaxed
-                text-slate-300
-              "
-            >
-              Platform modern untuk membantu masyarakat
-              desa melakukan pengaduan secara cepat,
-              transparan, aman, dan responsif.
-            </p>
+      } catch (error) {
 
-            <div className="mt-10 flex flex-wrap gap-4">
-              <Link
-                href="/register"
-                className="
-                  rounded-2xl
-                  bg-blue-600
-                  px-8
-                  py-4
-                  text-base
-                  font-semibold
-                  text-white
-                  transition-all
-                  hover:scale-105
-                  hover:bg-blue-500
-                "
-              >
-                Mulai Sekarang
-              </Link>
+        console.log(error);
 
-              <Link
-                href="/login"
-                className="
-                  rounded-2xl
-                  border
-                  border-white/10
-                  bg-white/5
-                  px-8
-                  py-4
-                  text-base
-                  font-semibold
-                  text-white
-                  backdrop-blur-xl
-                  transition-all
-                  hover:bg-white/10
-                "
-              >
-                Login
-              </Link>
-            </div>
-          </motion.div>
+      }
 
-          {/* RIGHT */}
-          <motion.div
-            initial={{
-              opacity: 0,
-              scale: 0.9,
-            }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-            }}
-            transition={{
-              duration: 0.5,
-            }}
-            className="
-              hidden
-              items-center
-              justify-center
-              lg:flex
-            "
-          >
-            <div
-              className="
-                relative
-                w-full
-                max-w-md
-                rounded-[32px]
-                border
-                border-white/10
-                bg-white/5
-                p-8
-                backdrop-blur-2xl
-              "
-            >
-              <div
-                className="
-                  absolute
-                  inset-0
-                  rounded-[32px]
-                  bg-gradient-to-br
-                  from-blue-500/10
-                  to-transparent
-                "
-              />
+    };
 
-              <div className="relative z-10">
-                <div className="mb-8 flex items-center gap-4">
-                  <div
-                    className="
-                      flex
-                      h-14
-                      w-14
-                      items-center
-                      justify-center
-                      rounded-2xl
-                      bg-blue-600/20
-                    "
-                  >
-                    🚨
-                  </div>
+  fetchComplaints();
 
-                  <div>
-                    <h2 className="text-lg font-semibold text-white">
-                      Pengaduan Aktif
-                    </h2>
-
-                    <p className="text-sm text-slate-400">
-                      Monitoring realtime
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {[
-                    "Lampu jalan rusak",
-                    "Kehilangan dokumen",
-                    "Jalan berlubang",
-                  ].map((item) => (
-                    <div
-                      key={item}
-                      className="
-                        rounded-2xl
-                        border
-                        border-white/10
-                        bg-white/5
-                        p-4
-                      "
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-medium text-white">
-                            {item}
-                          </h3>
-
-                          <p className="mt-1 text-xs text-slate-400">
-                            Sedang diproses admin
-                          </p>
-                        </div>
-
-                        <div
-                          className="
-                            rounded-full
-                            bg-blue-500/20
-                            px-3
-                            py-1
-                            text-xs
-                            text-blue-300
-                          "
-                        >
-                          PROCESS
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+  const interval =
+    setInterval(
+      fetchComplaints,
+      5000
     );
-  };
+
+  return () =>
+    clearInterval(interval);
+
+}, []);
+
+  return (
+
+    <section className="relative isolate flex min-h-screen items-center overflow-hidden">
+
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+
+        <motion.img
+          src={images[0]}
+          alt="Village"
+          className="h-full w-full object-cover"
+          animate={{
+            scale: [1, 1.05, 1],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+          }}
+        />
+
+        <div className="absolute inset-0 bg-slate-950/70" />
+
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/60 to-transparent" />
+
+      </div>
+
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-16 px-6 lg:grid-cols-2">
+
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 40,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            duration: 0.5,
+          }}
+          className="flex flex-col justify-center"
+        >
+
+          <div className="mb-6 inline-flex w-fit rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-2 text-sm text-blue-300 backdrop-blur-xl">
+            🏛️ Sistem Pengaduan Desa Digital
+          </div>
+
+          <h1 className="text-5xl font-black leading-tight text-white lg:text-7xl">
+            Welcome To
+            <br />
+            <span className="text-blue-500">
+              Pengaduan Desa
+            </span>
+          </h1>
+
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">
+            Platform modern untuk membantu masyarakat desa
+            melakukan pengaduan secara cepat, transparan,
+            aman, dan responsif.
+          </p>
+
+          <div className="mt-10 flex gap-4">
+
+            <Link
+              href="/register"
+              className="rounded-2xl bg-blue-600 px-8 py-4 font-semibold text-white transition hover:bg-blue-500"
+            >
+              Mulai Sekarang
+            </Link>
+
+            <Link
+              href="/login"
+              className="rounded-2xl border border-white/10 bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur-lg transition hover:bg-white/20"
+            >
+              Login
+            </Link>
+
+          </div>
+
+        </motion.div>
+
+        <motion.div
+          initial={{
+            opacity: 0,
+            scale: 0.9,
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+          }}
+          transition={{
+            duration: 0.5,
+          }}
+          className="hidden items-center justify-center lg:flex"
+        >
+
+          <div className="w-full max-w-md rounded-[32px] border border-white/10 bg-white/5 p-8 backdrop-blur-2xl">
+
+            <h2 className="mb-6 text-2xl font-bold text-white">
+              Pengaduan Terbaru
+            </h2>
+
+            <div className="space-y-4">
+
+              {complaints.length === 0 && (
+
+                <div className="rounded-2xl bg-white/5 p-4">
+
+                  <p className="text-slate-400">
+                    Belum ada pengaduan
+                  </p>
+
+                </div>
+
+              )}
+
+              {complaints.map((item) => (
+
+                <div
+                  key={item.id}
+                  className="rounded-2xl bg-white/5 p-4"
+                >
+
+                  <div className="flex items-center justify-between">
+
+                    <div>
+
+                      <p className="font-semibold text-white">
+                        {item.title}
+                      </p>
+
+                      <p className="text-sm text-slate-400">
+
+                        {item.status === "PENDING" &&
+                          "Menunggu verifikasi"}
+
+                        {item.status === "PROCESS" &&
+                          "Sedang diproses admin"}
+
+                        {item.status === "COMPLETED" &&
+                          "Pengaduan selesai"}
+
+                        {item.status === "REJECTED" &&
+                          "Pengaduan ditolak"}
+
+                      </p>
+
+                    </div>
+
+                    <span
+                      className={`
+                        rounded-full
+                        px-3
+                        py-1
+                        text-xs
+
+                        ${
+                          item.status === "PENDING"
+                            ? "bg-red-500/20 text-red-300"
+                            : item.status === "PROCESS"
+                            ? "bg-yellow-500/20 text-yellow-300"
+                            : item.status === "COMPLETED"
+                            ? "bg-green-500/20 text-green-300"
+                            : "bg-gray-500/20 text-gray-300"
+                        }
+                      `}
+                    >
+                      {item.status}
+                    </span>
+
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
+        </motion.div>
+
+      </div>
+
+    </section>
+
+  );
+
+};

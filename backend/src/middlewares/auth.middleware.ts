@@ -1,12 +1,10 @@
 import {
-  NextFunction,
   Request,
   Response,
+  NextFunction,
 } from "express";
 
 import { verifyToken } from "@/utils/jwt";
-
-import { errorResponse } from "@/utils/response";
 
 export const authMiddleware = (
   req: Request,
@@ -14,33 +12,43 @@ export const authMiddleware = (
   next: NextFunction
 ) => {
   try {
+    console.log(
+      "Authorization Header:",
+      req.headers.authorization
+    );
+
     const bearerToken =
       req.headers.authorization;
 
     if (!bearerToken) {
-      return errorResponse(
-        res,
-        "Unauthorized",
-        401
-      );
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
     }
 
     const token =
       bearerToken.split(" ")[1];
 
-    const decoded = verifyToken(token) as {
-      userId: string;
-      role: "USER" | "ADMIN";
-    };
+    console.log("TOKEN =", token);
 
-    req.user = decoded;
+    const decoded =
+      verifyToken(token);
+
+    console.log(
+      "DECODED =",
+      decoded
+    );
+
+    req.user = decoded as any;
 
     next();
   } catch (error) {
-    return errorResponse(
-      res,
-      "Unauthorized",
-      401
-    );
+    console.log(error);
+
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized",
+    });
   }
 };

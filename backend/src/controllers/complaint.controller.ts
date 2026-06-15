@@ -8,6 +8,7 @@ import {
   deleteComplaintService,
   getComplaintDetailService,
   getComplaintsService,
+   getMyComplaintsService,
   updateComplaintService,
 } from "@/services/complaint.service";
 
@@ -16,12 +17,15 @@ import {
   successResponse,
 } from "@/utils/response";
 
+import { prisma } from "@/config/prisma";
+
 export const createComplaintController =
   async (
     req: Request,
     res: Response
   ) => {
     try {
+
       const image =
         req.file?.filename;
 
@@ -38,12 +42,15 @@ export const createComplaintController =
         result,
         201
       );
+
     } catch (error) {
+
       return errorResponse(
         res,
         (error as Error).message,
         400
       );
+
     }
   };
 
@@ -53,18 +60,11 @@ export const getComplaintsController =
     res: Response
   ) => {
     try {
-      const page = Number(
-        req.query.page
-      );
+      const page = Number(req.query.page) || 1;
 
-      const limit = Number(
-        req.query.limit
-      );
+      const limit = Number(req.query.limit) || 10;
 
-      const skip = Number(
-        req.query.skip
-      );
-
+      const skip = (page - 1) * limit;
       const search =
         req.query.search as
           | string
@@ -97,6 +97,34 @@ export const getComplaintsController =
       );
     }
   };
+  export const getComplaintDetailController =
+  async (
+    req: Request,
+    res: Response
+  ) => {
+    try {
+
+      const result =
+        await getComplaintDetailService(
+          String(req.params.id)
+        );
+
+      return successResponse(
+        res,
+        "Complaint detail fetched",
+        result
+      );
+
+    } catch (error) {
+
+      return errorResponse(
+        res,
+        (error as Error).message,
+        400
+      );
+
+    }
+  };
 
 export const updateComplaintController =
   async (
@@ -104,11 +132,15 @@ export const updateComplaintController =
     res: Response
   ) => {
     try {
+      const image =
+        req.file?.filename;
+
       const result =
         await updateComplaintService(
           String(req.params.id),
           req.body,
-          req.user!.userId
+          req.user!.userId,
+          image
         );
 
       return successResponse(
@@ -124,6 +156,7 @@ export const updateComplaintController =
       );
     }
   };
+  
 
 export const deleteComplaintController =
   async (
@@ -149,4 +182,108 @@ export const deleteComplaintController =
         400
       );
     }
+  };
+
+export const getMyComplaintsController =
+  async (
+    req: Request,
+    res: Response
+  ) => {
+
+    try {
+
+      const complaints =
+        await getMyComplaintsService(
+          req.user!.userId
+        );
+
+      return res.status(200).json({
+        success: true,
+        data: complaints,
+      });
+
+    } catch (error) {
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Failed to get complaints",
+      });
+
+    }
+
+  };
+
+  export const getMyStatsController =
+  async (
+    req: Request,
+    res: Response
+  ) => {
+
+    try {
+
+      const userId =
+        req.user!.userId;
+
+      const total =
+        await prisma.complaint.count({
+          where: {
+            userId,
+          },
+        });
+
+      const pending =
+        await prisma.complaint.count({
+          where: {
+            userId,
+            status: "PENDING",
+          },
+        });
+
+      const process =
+        await prisma.complaint.count({
+          where: {
+            userId,
+            status: "PROCESS",
+          },
+        });
+
+      const completed =
+        await prisma.complaint.count({
+          where: {
+            userId,
+            status: "COMPLETED",
+          },
+        });
+
+      const rejected =
+        await prisma.complaint.count({
+          where: {
+            userId,
+            status: "REJECTED",
+          },
+        });
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          total,
+          pending,
+          process,
+          completed,
+          rejected,
+        },
+      });
+
+    } catch (error) {
+
+      console.log(error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Failed to get stats",
+      });
+
+    }
+
   };

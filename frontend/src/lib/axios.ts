@@ -1,25 +1,17 @@
 import axios from "axios";
 
-import { getToken } from "@/lib/token";
+import { getToken } from "./token";
 
-export const axiosInstance =
-  axios.create({
-    baseURL:
-      process.env
-        .NEXT_PUBLIC_API_URL,
+const axiosInstance = axios.create({
+  baseURL:
+    process.env.NEXT_PUBLIC_API_URL,
 
-    withCredentials: true,
-
-    headers: {
-      "Content-Type":
-        "application/json",
-    },
-  });
+  withCredentials: true,
+});
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token =
-      getToken();
+    const token = getToken();
 
     if (token) {
       config.headers.Authorization =
@@ -27,12 +19,6 @@ axiosInstance.interceptors.request.use(
     }
 
     return config;
-  },
-
-  (error) => {
-    return Promise.reject(
-      error
-    );
   }
 );
 

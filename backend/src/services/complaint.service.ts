@@ -3,6 +3,7 @@ import {
   deleteComplaint,
   getComplaintById,
   getComplaints,
+  getMyComplaints,
   updateComplaint,
 } from "@/repositories/complaint.repository";
 
@@ -59,8 +60,10 @@ export const updateComplaintService =
   async (
     id: string,
     payload: UpdateComplaintPayload,
-    userId: string
+    userId: string,
+    image?: string
   ) => {
+
     const complaint =
       await getComplaintById(id);
 
@@ -80,8 +83,21 @@ export const updateComplaintService =
 
     return updateComplaint(
       id,
-      payload
+      payload,
+      image
     );
+
+  };
+
+export const getMyComplaintsService =
+  async (
+    userId: string
+  ) => {
+
+    return getMyComplaints(
+      userId
+    );
+
   };
 
 export const deleteComplaintService =
@@ -89,6 +105,7 @@ export const deleteComplaintService =
     id: string,
     userId: string
   ) => {
+
     const complaint =
       await getComplaintById(id);
 
@@ -107,4 +124,5 @@ export const deleteComplaintService =
     }
 
     return deleteComplaint(id);
+
   };

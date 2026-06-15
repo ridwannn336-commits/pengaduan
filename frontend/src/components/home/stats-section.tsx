@@ -1,23 +1,68 @@
+"use client";
+
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  getHomeData,
+} from "@/services/public.service";
+
+type Stats = {
+  total: number;
+  completed: number;
+  totalUsers: number;
+};
+
 export const StatsSection = () => {
-  const stats = [
-    {
-      title: "120+",
-      subtitle:
-        "Pengaduan Terselesaikan",
-    },
-    {
-      title: "98%",
-      subtitle:
-        "Respon Cepat",
-    },
-    {
-      title: "24/7",
-      subtitle:
-        "Layanan Online",
-    },
-  ];
+
+  const [stats, setStats] =
+    useState<Stats>({
+      total: 0,
+      completed: 0,
+      totalUsers: 0,
+    });
+
+  useEffect(() => {
+
+  const fetchStats =
+    async () => {
+
+      try {
+
+const data =
+  await getHomeData();
+
+       setStats({
+  total: data.total,
+  completed: data.completed,
+  totalUsers: data.totalUsers,
+});
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+
+    };
+
+  fetchStats();
+
+  const interval =
+    setInterval(
+      fetchStats,
+      5000
+    );
+
+  return () =>
+    clearInterval(interval);
+
+}, []);
 
   return (
+
     <section
       className="
         relative
@@ -26,6 +71,7 @@ export const StatsSection = () => {
         py-24
       "
     >
+
       <div
         className="
           mx-auto
@@ -35,40 +81,95 @@ export const StatsSection = () => {
           md:grid-cols-3
         "
       >
-        {stats.map((item) => (
-          <div
-            key={item.title}
+
+        <div
+          className="
+            rounded-[28px]
+            border
+            border-white/10
+            bg-white/5
+            p-10
+            text-center
+            backdrop-blur-2xl
+          "
+        >
+
+          <h2
             className="
-              rounded-[28px]
-              border
-              border-white/10
-              bg-white/5
-              p-10
-              text-center
-              backdrop-blur-2xl
+              text-5xl
+              font-black
+              text-blue-400
             "
           >
-            <h2
-              className="
-                text-5xl
-                font-black
-                text-blue-400
-              "
-            >
-              {item.title}
-            </h2>
+            {stats.total}
+          </h2>
 
-            <p
-              className="
-                mt-4
-                text-slate-300
-              "
-            >
-              {item.subtitle}
-            </p>
-          </div>
-        ))}
+          <p className="mt-4 text-slate-300">
+            Total Pengaduan
+          </p>
+
+        </div>
+
+        <div
+          className="
+            rounded-[28px]
+            border
+            border-white/10
+            bg-white/5
+            p-10
+            text-center
+            backdrop-blur-2xl
+          "
+        >
+
+          <h2
+            className="
+              text-5xl
+              font-black
+              text-blue-400
+            "
+          >
+            {stats.completed}
+          </h2>
+
+          <p className="mt-4 text-slate-300">
+            Pengaduan Selesai
+          </p>
+
+        </div>
+
+        <div
+          className="
+            rounded-[28px]
+            border
+            border-white/10
+            bg-white/5
+            p-10
+            text-center
+            backdrop-blur-2xl
+          "
+        >
+
+          <h2
+            className="
+              text-5xl
+              font-black
+              text-blue-400
+            "
+          >
+            {stats.totalUsers}
+          </h2>
+
+          <p className="mt-4 text-slate-300">
+            Total Pengguna
+          </p>
+
+        </div>
+
       </div>
+
     </section>
+
   );
+
 };

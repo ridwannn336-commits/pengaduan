@@ -97,47 +97,26 @@ export const LoginForm = () => {
 
       // ROLE BASED REDIRECT
 
-const role =
-  String(
-    user.role
-  ).toUpperCase();
+const role = String(user.role).toUpperCase();
 
-console.log(
-  "USER:",
-  user
-);
-
-console.log(
-  "ROLE:",
-  role
-);
-
-// save token
+// simpan token
 setToken(token);
 
-// save user
+// simpan user
 localStorage.setItem(
   "pengaduan_user",
   JSON.stringify(user)
 );
 
-toast.success(
-  "Login berhasil"
-);
+toast.success("Login berhasil");
 
-// redirect
+// redirect berdasarkan role
 setTimeout(() => {
-  // ADMIN
   if (role === "ADMIN") {
-    window.location.href =
-      "/admin/dashboard";
-
-    return;
+    router.push("/admin/dashboard");
+  } else {
+    router.push("/user/dashboard");
   }
-
-  // USER
-  window.location.href =
-    "/";
 }, 500);
 
 

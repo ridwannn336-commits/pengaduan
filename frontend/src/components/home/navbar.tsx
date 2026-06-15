@@ -4,20 +4,32 @@ import Link from "next/link";
 
 import Cookies from "js-cookie";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 export const Navbar = () => {
   const [isLogin, setIsLogin] =
     useState(false);
 
+  const [role, setRole] =
+    useState("");
+
   useEffect(() => {
     const token =
       Cookies.get("token");
 
+    const user =
+      localStorage.getItem(
+        "pengaduan_user"
+      );
+
     setIsLogin(!!token);
+
+    if (user) {
+      const parsed =
+        JSON.parse(user);
+
+      setRole(parsed.role);
+    }
   }, []);
 
   const handleLogout = () => {
@@ -33,96 +45,58 @@ export const Navbar = () => {
   return (
     <header
       className="
-        fixed
-        left-0
-        top-0
-        z-50
-        w-full
-        border-b
-        border-white/10
-        bg-slate-950/70
-        backdrop-blur-2xl
-      "
+      fixed
+      top-0
+      left-0
+      z-50
+      w-full
+      border-b
+      border-white/10
+      bg-slate-950/80
+      backdrop-blur-xl
+    "
     >
       <div
         className="
-          mx-auto
-          flex
-          h-20
-          max-w-7xl
-          items-center
-          justify-between
-          px-6
-        "
+        mx-auto
+        flex
+        h-20
+        max-w-7xl
+        items-center
+        justify-between
+        px-6
+      "
       >
         <Link
           href="/"
           className="
-            text-2xl
-            font-black
-            text-white
-          "
+          text-2xl
+          font-black
+          text-white
+        "
         >
           DesaCare
         </Link>
 
         <nav
           className="
-            flex
-            items-center
-            gap-3
-          "
+          flex
+          items-center
+          gap-3
+        "
         >
           <Link
             href="/"
-            className="
-              rounded-xl
-              px-4
-              py-2
-              text-sm
-              text-slate-300
-              transition-all
-              hover:bg-white/10
-              hover:text-white
-            "
+            className="text-slate-300 hover:text-white"
           >
             Home
           </Link>
 
-          <Link
-            href={
-              isLogin
-                ? "/complaint"
-                : "/login"
-            }
-            className="
-              rounded-xl
-              px-4
-              py-2
-              text-sm
-              text-slate-300
-              transition-all
-              hover:bg-white/10
-              hover:text-white
-            "
-          >
-            Pengaduan
-          </Link>
-
-          {!isLogin ? (
+          {!isLogin && (
             <>
               <Link
                 href="/login"
-                className="
-                  rounded-xl
-                  px-4
-                  py-2
-                  text-sm
-                  text-slate-300
-                  transition-all
-                  hover:bg-white/10
-                  hover:text-white
-                "
+                className="text-slate-300 hover:text-white"
               >
                 Login
               </Link>
@@ -130,40 +104,92 @@ export const Navbar = () => {
               <Link
                 href="/register"
                 className="
-                  rounded-2xl
-                  bg-blue-500
-                  px-5
-                  py-2
-                  text-sm
-                  font-medium
-                  text-white
-                  transition-all
-                  hover:bg-blue-400
-                "
+                rounded-xl
+                bg-blue-600
+                px-4
+                py-2
+                text-white
+              "
               >
                 Register
               </Link>
             </>
-          ) : (
-            <button
-              onClick={
-                handleLogout
-              }
-              className="
-                rounded-2xl
-                bg-red-500/20
-                px-5
-                py-2
-                text-sm
-                font-medium
-                text-red-300
-                transition-all
-                hover:bg-red-500/30
-              "
-            >
-              Logout
-            </button>
           )}
+
+          {isLogin &&
+            role === "USER" && (
+              <>
+               <Link
+                href="/user/dashboard"
+                className="text-slate-300 hover:text-white"
+              >
+                Dashboard
+                </Link>
+
+                <Link
+                  href="/user/complaint"
+                  className="text-slate-300 hover:text-white"
+                >
+                  Pengaduan Baru
+                </Link>
+
+                <Link
+                 href="/user/history"
+                  className="text-slate-300 hover:text-white"
+                >
+                  Riwayat
+                </Link>
+
+                <Link
+                  href="/user/profile"
+                  className="text-slate-300 hover:text-white"
+                >
+                  Profile
+                </Link>
+
+                <button
+                  onClick={
+                    handleLogout
+                  }
+                  className="
+                  rounded-xl
+                  bg-red-500
+                  px-4
+                  py-2
+                  text-white
+                "
+                >
+                  Logout
+                </button>
+              </>
+            )}
+
+          {isLogin &&
+            role === "ADMIN" && (
+              <>
+                <Link
+                  href="/admin/dashboard"
+                  className="text-slate-300 hover:text-white"
+                >
+                  Admin Dashboard
+                </Link>
+
+                <button
+                  onClick={
+                    handleLogout
+                  }
+                  className="
+                  rounded-xl
+                  bg-red-500
+                  px-4
+                  py-2
+                  text-white
+                "
+                >
+                  Logout
+                </button>
+              </>
+            )}
         </nav>
       </div>
     </header>

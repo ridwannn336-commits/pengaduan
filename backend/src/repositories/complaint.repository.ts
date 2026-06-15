@@ -105,14 +105,21 @@ export const getComplaintById =
 export const updateComplaint =
   async (
     id: string,
-    payload: UpdateComplaintPayload
+    payload: UpdateComplaintPayload,
+    image?: string
   ) => {
     return prisma.complaint.update({
       where: {
         id,
       },
 
-      data: payload,
+      data: {
+        ...payload,
+
+        ...(image && {
+          image,
+        }),
+      },
     });
   };
 
@@ -123,4 +130,31 @@ export const deleteComplaint =
         id,
       },
     });
+  };
+
+  export const getMyComplaints =
+  async (
+    userId: string
+  ) => {
+
+    return prisma.complaint.findMany({
+      where: {
+        userId,
+      },
+
+      orderBy: {
+        createdAt: "desc",
+      },
+
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
   };

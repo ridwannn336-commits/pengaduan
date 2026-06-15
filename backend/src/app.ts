@@ -5,14 +5,24 @@ import compression from "compression";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import hpp from "hpp";
+import path from "path";
 
 import routes from "@/routes";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
 
 app.use(hpp());
 
@@ -24,10 +34,39 @@ app.use(morgan("dev"));
 
 app.use(express.json());
 
-app.use(express.urlencoded({ extended: true }));
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
-app.use("/uploads", express.static("src/uploads"));
+console.log(
+  "STATIC PATH:",
+  path.join(
+    process.cwd(),
+    "src",
+    "uploads"
+  )
+);
 
-app.use("/api/v1", routes);
+app.use(
+  "/uploads",
+  express.static(
+    path.join(
+      process.cwd(),
+      "src",
+      "uploads"
+    ),
+    {
+      index: false,
+      fallthrough: false,
+    }
+  )
+);
+
+app.use(
+  "/api/v1",
+  routes
+);
 
 export default app;

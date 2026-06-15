@@ -4,189 +4,86 @@ import { motion } from "framer-motion";
 
 const features = [
   {
-    icon: "📄",
-    title: "Kehilangan",
-    description:
-      "Laporkan kehilangan dokumen atau barang penting.",
-  },
-
-  {
     icon: "🚧",
-    title: "Fasilitas Rusak",
+    title: "Jalan Rusak",
     description:
-      "Laporkan jalan rusak, lampu mati, dan fasilitas umum.",
+      "Melaporkan jalan berlubang atau rusak agar segera diperbaiki.",
   },
-
   {
-    icon: "💬",
-    title: "Kritik & Saran",
+    icon: "💡",
+    title: "Lampu Jalan",
     description:
-      "Berikan masukan untuk kemajuan desa.",
+      "Melaporkan lampu jalan yang mati atau mengalami kerusakan.",
   },
-
   {
-    icon: "⚡",
+    icon: "🌳",
+    title: "Lingkungan",
+    description:
+      "Melaporkan sampah, banjir, pohon tumbang, dan masalah lingkungan.",
+  },
+  {
+    icon: "🏢",
     title: "Pelayanan Desa",
     description:
-      "Laporkan pelayanan yang kurang maksimal.",
+      "Melaporkan pelayanan administrasi desa yang kurang maksimal.",
   },
 ];
 
-export const FeatureSection =
-  () => {
-    return (
-      <section className="relative py-32">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-16 text-center">
-            <div
-              className="
-                inline-flex
-                rounded-full
-                border
-                border-blue-500/20
-                bg-blue-500/10
-                px-4
-                py-2
-                text-sm
-                text-blue-300
-              "
-            >
-              FITUR SISTEM
-            </div>
+export const FeatureSection = () => {
+  return (
+    <section className="py-28">
 
-            <h2
-              className="
-                mt-6
-                text-4xl
-                font-black
-                text-white
-                lg:text-5xl
-              "
-            >
-              Jenis Pengaduan
-            </h2>
+      <div className="mx-auto max-w-7xl px-6">
 
-            <p
-              className="
-                mx-auto
-                mt-4
-                max-w-2xl
-                text-slate-400
-              "
-            >
-              Sistem dirancang untuk membantu masyarakat
-              menyampaikan berbagai pengaduan secara mudah
-              dan cepat.
-            </p>
-          </div>
+        <div className="text-center mb-16">
 
-          <div
-            className="
-              grid
-              gap-6
-              md:grid-cols-2
-              xl:grid-cols-4
-            "
-          >
-            {features.map(
-              (
-                feature,
-                index
-              ) => (
-                <motion.div
-                  key={
-                    feature.title
-                  }
-                  initial={{
-                    opacity: 0,
-                    y: 30,
-                  }}
-                  whileInView={{
-                    opacity: 1,
-                    y: 0,
-                  }}
-                  transition={{
-                    delay:
-                      index * 0.1,
-                  }}
-                  viewport={{
-                    once: true,
-                  }}
-                  className="
-                    group
-                    relative
-                    overflow-hidden
-                    rounded-[28px]
-                    border
-                    border-white/10
-                    bg-white/5
-                    p-8
-                    backdrop-blur-2xl
-                    transition-all
-                    hover:-translate-y-2
-                  "
-                >
-                  <div
-                    className="
-                      absolute
-                      inset-0
-                      bg-gradient-to-br
-                      from-blue-500/10
-                      to-transparent
-                      opacity-0
-                      transition-all
-                      group-hover:opacity-100
-                    "
-                  />
+          <span className="rounded-full bg-blue-600/20 px-4 py-2 text-blue-300">
+            KATEGORI PENGADUAN
+          </span>
 
-                  <div className="relative z-10">
-                    <div
-                      className="
-                        mb-6
-                        flex
-                        h-16
-                        w-16
-                        items-center
-                        justify-center
-                        rounded-2xl
-                        bg-blue-600/20
-                        text-3xl
-                      "
-                    >
-                      {
-                        feature.icon
-                      }
-                    </div>
+          <h2 className="mt-5 text-5xl font-bold text-white">
+            Jenis Pengaduan
+          </h2>
 
-                    <h3
-                      className="
-                        text-xl
-                        font-semibold
-                        text-white
-                      "
-                    >
-                      {
-                        feature.title
-                      }
-                    </h3>
+          <p className="mt-4 text-slate-400">
+            Sistem menerima berbagai jenis laporan masyarakat untuk meningkatkan kualitas pelayanan desa.
+          </p>
 
-                    <p
-                      className="
-                        mt-4
-                        leading-relaxed
-                        text-slate-400
-                      "
-                    >
-                      {
-                        feature.description
-                      }
-                    </p>
-                  </div>
-                </motion.div>
-              )
-            )}
-          </div>
         </div>
-      </section>
-    );
-  };
+
+        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+          {features.map((item, index) => (
+
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.15 }}
+              viewport={{ once: true }}
+              className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
+            >
+
+              <div className="text-5xl">
+                {item.icon}
+              </div>
+
+              <h3 className="mt-6 text-2xl font-bold text-white">
+                {item.title}
+              </h3>
+
+              <p className="mt-4 text-slate-400">
+                {item.description}
+              </p>
+
+            </motion.div>
+
+          ))}
+
+        </div>
+
+      </div>
+
+    </section>
+  );
+};

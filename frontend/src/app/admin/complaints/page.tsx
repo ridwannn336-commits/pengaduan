@@ -2,348 +2,340 @@
 
 import {
   useEffect,
-  useMemo,
   useState,
 } from "react";
 
 import {
   getAllComplaints,
+  updateComplaintStatus,
 } from "@/services/admin.service";
 
-import {
-  ComplaintTable,
-} from "@/components/admin/complaint-table";
+type Complaint = {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  image?: string;
+  adminResponse?: string;
 
-import {
-  UpdateStatusModal,
-} from "@/components/admin/update-status-modal";
+  user: {
+    name: string;
+    email: string;
+  };
+};
 
-import { Complaint } from "@/types/admin.type";
+export default function AdminComplaintsPage() {
 
-export default function ComplaintsPage() {
-  const [
-    complaints,
-    setComplaints,
-  ] = useState<
-    Complaint[]
-  >([]);
+  const [complaints, setComplaints] =
+    useState<Complaint[]>([]);
+
+    const [responses, setResponses] =
+  useState<Record<string, string>>({});
 
   const [loading, setLoading] =
     useState(true);
 
-  const [search, setSearch] =
-    useState("");
+  const fetchData = async () => {
+  try {
 
-  const [
-    filterStatus,
-    setFilterStatus,
-  ] = useState("");
+    const data = await getAllComplaints();
 
-  const [
-    currentPage,
-    setCurrentPage,
-  ] = useState(1);
+    console.log("DATA =", data);
 
-  const [
-    modalOpen,
-    setModalOpen,
-  ] = useState(false);
-
-  const [
-    selectedId,
-    setSelectedId,
-  ] = useState("");
-
-  const pageSize = 10;
-
-  const fetchComplaints =
-    async () => {
-      try {
-        const response =
-          await getAllComplaints();
-
-        setComplaints(
-          response.data.data
-        );
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-  useEffect(() => {
-    fetchComplaints();
-  }, []);
-
-  const filteredComplaints =
-    useMemo(() => {
-      return complaints
-        .filter((item) =>
-          item.title
-            .toLowerCase()
-            .includes(
-              search.toLowerCase()
-            )
-        )
-        .filter((item) =>
-          filterStatus
-            ? item.status ===
-              filterStatus
-            : true
-        );
-    }, [
-      complaints,
-      search,
-      filterStatus,
-    ]);
-
-  const paginatedComplaints =
-    useMemo(() => {
-      return filteredComplaints.slice(
-        (currentPage - 1) *
-          pageSize,
-
-        currentPage *
-          pageSize
-      );
-    }, [
-      filteredComplaints,
-      currentPage,
-    ]);
-
-  const totalPages =
-    Math.ceil(
-      filteredComplaints.length /
-        pageSize
+    setComplaints(
+      Array.isArray(data) ? data : []
     );
 
-  const openModal = (
+  } catch (error) {
+
+    console.log(error);
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
+
+  useEffect(() => {
+
+    fetchData();
+
+  }, []);
+
+  const handleStatusUpdate =
+    async (
+      id: string,
+      status: string
+    ) => {
+
+      try {
+
+        await updateComplaintStatus(
+          id,
+          {
+            status,
+          }
+        );
+
+        fetchData();
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+
+    };
+
+const handleResponseSubmit =
+  async (
     id: string
   ) => {
-    setSelectedId(id);
 
-    setModalOpen(true);
+    try {
+
+      await updateComplaintStatus(
+        id,
+        {
+          status:
+            complaints.find(
+              (item) =>
+                item.id === id
+            )?.status ||
+            "PENDING",
+
+          adminResponse:
+            responses[id],
+        }
+      );
+
+      fetchData();
+
+      alert(
+        "Tanggapan berhasil disimpan"
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
   };
-
-  const closeModal = () => {
-    setSelectedId("");
-
-    setModalOpen(false);
-  };
-
+console.log(complaints);
   return (
-    <div className="space-y-6">
-      {/* HEADER */}
-      <div>
-        <h1
-          className="
-            text-4xl
-            font-bold
-            text-white
-          "
-        >
-          Pengaduan 📄
-        </h1>
 
-        <p
-          className="
-            mt-2
-            text-slate-400
-          "
-        >
-          Kelola pengaduan
-          warga desa.
-        </p>
-      </div>
+    <main className="min-h-screen bg-slate-950 p-8">
 
-      {/* FILTER */}
-      <div
-        className="
-          flex
-          flex-col
-          gap-4
-          rounded-[24px]
-          border
-          border-white/10
-          bg-white/5
-          p-4
-          backdrop-blur-2xl
-          md:flex-row
-        "
-      >
-        <input
-          type="text"
-          placeholder="Cari pengaduan..."
-          value={search}
-          onChange={(e) =>
-            setSearch(
-              e.target.value
-            )
-          }
-          className="
-            h-12
-            flex-1
-            rounded-2xl
-            border
-            border-white/10
-            bg-white/5
-            px-4
-            text-white
-            outline-none
-          "
-        />
+      <h1 className="mb-8 text-4xl font-bold text-white">
 
-        <select
-          value={filterStatus}
-          onChange={(e) =>
-            setFilterStatus(
-              e.target.value
-            )
-          }
-          className="
-            h-12
-            rounded-2xl
-            border
-            border-white/10
-            bg-white/5
-            px-4
-            text-white
-            outline-none
-          "
-        >
-          <option value="">
-            Semua Status
-          </option>
+        Kelola Pengaduan
 
-          <option value="PENDING">
-            Pending
-          </option>
+      </h1>
 
-          <option value="PROCESS">
-            Diproses
-          </option>
+      {loading && (
 
-          <option value="COMPLETED">
-            Selesai
-          </option>
+        <p className="text-white">
 
-          <option value="REJECTED">
-            Ditolak
-          </option>
-        </select>
-      </div>
-
-      {/* TABLE */}
-      {loading ? (
-        <div
-          className="
-            rounded-[28px]
-            border
-            border-white/10
-            bg-white/5
-            p-10
-            text-white
-          "
-        >
           Loading...
-        </div>
-      ) : (
-        <>
-          <ComplaintTable
-            complaints={
-              paginatedComplaints
-            }
-            onUpdate={
-              openModal
-            }
-          />
 
-          {/* PAGINATION */}
-          <div
-            className="
-              flex
-              items-center
-              justify-center
-              gap-3
-            "
-          >
-            <button
-              disabled={
-                currentPage ===
-                1
-              }
-              onClick={() =>
-                setCurrentPage(
-                  (
-                    prev
-                  ) =>
-                    prev - 1
-                )
-              }
+        </p>
+
+      )}
+
+      <p className="text-white">
+  Total complaint :
+  {complaints.length}
+</p>
+
+      <div className="space-y-5">
+
+        {complaints.map(
+          (item) => (
+
+            <div
+              key={item.id}
               className="
-                rounded-xl
+                rounded-3xl
                 border
                 border-white/10
                 bg-white/5
-                px-4
-                py-2
-                text-white
-                disabled:opacity-40
+                p-6
               "
             >
-              Prev
-            </button>
 
-            <div className="text-white">
-              {currentPage} /{" "}
-              {totalPages || 1}
+              <h2 className="text-2xl font-bold text-white">
+
+                {item.title}
+
+              </h2>
+
+              <p className="mt-2 text-slate-400">
+                {item.description}
+              </p>
+
+{item.image && (
+  <div
+    style={{
+      width: "300px",
+      height: "300px",
+      marginTop: "16px",
+    }}
+  >
+    <img
+      src={`http://localhost:5000/uploads/complaints/${item.image}`}
+      alt={item.title}
+      style={{
+        width: "300px",
+        height: "100%",
+        objectFit: "cover",
+        borderRadius: "16px",
+      }}
+    />
+  </div>
+)} 
+
+              <div className="mt-4 text-sm text-slate-400">
+
+                Pelapor:
+                {" "}
+                {item.user.name}
+                {" "}
+                (
+                {item.user.email}
+                )
+
+              </div>
+
+              <div className="mt-4">
+
+                <span
+                  className="
+                    rounded-xl
+                    bg-blue-500/20
+                    px-3
+                    py-2
+                    text-blue-300
+                  "
+                >
+                  {item.status}
+                </span>
+
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+
+                <button
+                  onClick={() =>
+                    handleStatusUpdate(
+                      item.id,
+                      "PROCESS"
+                    )
+                  }
+                  className="
+                    rounded-xl
+                    bg-yellow-600
+                    px-4
+                    py-2
+                    text-white
+                  "
+                >
+                  Process
+                </button>
+
+                <button
+                  onClick={() =>
+                    handleStatusUpdate(
+                      item.id,
+                      "COMPLETED"
+                    )
+                  }
+                  className="
+                    rounded-xl
+                    bg-green-600
+                    px-4
+                    py-2
+                    text-white
+                  "
+                >
+                  Complete
+                </button>
+
+                <button
+                  onClick={() =>
+                    handleStatusUpdate(
+                      item.id,
+                      "REJECTED"
+                    )
+                  }
+                  className="
+                    rounded-xl
+                    bg-red-600
+                    px-4
+                    py-2
+                    text-white
+                  "
+                >
+                  Reject
+                </button>
+
+              </div>
+
+              <div className="mt-6">
+
+                <textarea
+                  placeholder="Tulis tanggapan admin..."
+                  value={
+                    responses[item.id] || ""
+                  }
+                  onChange={(e) =>
+                    setResponses({
+                      ...responses,
+                      [item.id]:
+                        e.target.value,
+                    })
+                  }
+                  className="
+                    w-full
+                    rounded-2xl
+                    border
+                    border-white/10
+                    bg-slate-900
+                    p-4
+                    text-white
+                  "
+                />
+
+                <button
+                  onClick={() =>
+                    handleResponseSubmit(
+                      item.id
+                    )
+                  }
+                  className="
+                    mt-3
+                    rounded-xl
+                    bg-blue-600
+                    px-4
+                    py-2
+                    text-white
+                  "
+                >
+                  Simpan Tanggapan
+                </button>
+
+              </div>
+
             </div>
 
-            <button
-              disabled={
-                currentPage ===
-                totalPages
-              }
-              onClick={() =>
-                setCurrentPage(
-                  (
-                    prev
-                  ) =>
-                    prev + 1
-                )
-              }
-              className="
-                rounded-xl
-                border
-                border-white/10
-                bg-white/5
-                px-4
-                py-2
-                text-white
-                disabled:opacity-40
-              "
-            >
-              Next
-            </button>
-          </div>
-        </>
-      )}
+          )
+        )}
 
-      {/* MODAL */}
-      {modalOpen && (
-        <UpdateStatusModal
-          complaintId={
-            selectedId
-          }
-          onClose={
-            closeModal
-          }
-          onUpdated={
-            fetchComplaints
-          }
-        />
-      )}
-    </div>
+      </div>
+
+    </main>
+
   );
+
 }

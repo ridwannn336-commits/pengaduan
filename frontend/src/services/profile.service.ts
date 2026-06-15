@@ -1,43 +1,39 @@
-import { axiosInstance } from "@/lib/axios";
+import axiosInstance from "@/lib/axios";
 
 import {
   ChangePasswordPayload,
-  ProfileResponse,
   UpdateProfilePayload,
 } from "@/types/profile.type";
 
-export const getProfileService =
-  async () => {
-    const response =
-      await axiosInstance.get<ProfileResponse>(
-        "/profile"
-      );
+export const getProfile = async () => {
+  const response = await axiosInstance.get(
+    "/profile"
+  );
 
-    return response.data;
-  };
+  return response.data.data;
+};
 
-export const updateProfileService =
+export const updateProfile = async (
+  data: UpdateProfilePayload
+) => {
+  const response =
+    await axiosInstance.put(
+      "/profile",
+      data
+    );
+
+  return response.data.data;
+};
+
+export const changePassword =
   async (
-    payload: UpdateProfilePayload
+    data: ChangePasswordPayload
   ) => {
     const response =
       await axiosInstance.put(
-        "/profile",
-        payload
-      );
-
-    return response.data;
-  };
-
-export const changePasswordService =
-  async (
-    payload: ChangePasswordPayload
-  ) => {
-    const response =
-      await axiosInstance.patch(
         "/profile/change-password",
-        payload
+        data
       );
 
-    return response.data;
+    return response.data.data;
   };

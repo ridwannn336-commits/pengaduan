@@ -9,13 +9,13 @@ export default function RegisterPage() {
         min-h-screen
         items-center
         justify-center
-        overflow-hidden
         bg-slate-950
         px-4
       "
     >
       <div
         className="
+          pointer-events-none
           absolute
           left-[-120px]
           top-[-120px]
@@ -29,6 +29,7 @@ export default function RegisterPage() {
 
       <div
         className="
+          pointer-events-none
           absolute
           bottom-[-120px]
           right-[-120px]

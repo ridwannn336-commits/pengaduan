@@ -1,49 +1,134 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getComplaintAnalytics } from "@/services/admin.service";
-import { ComplaintChart } from "@/components/admin/complaint-chart";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
+import {
+  getComplaintAnalytics,
+} from "@/services/admin.service";
+
+const COLORS = [
+  "#3b82f6",
+  "#f59e0b",
+  "#10b981",
+  "#ef4444",
+];
 
 export default function AnalyticsPage() {
-  const [data, setData] = useState<
-    { status: string; count: number }[]
-  >([]);
 
-  const [loading, setLoading] = useState(true);
-
-  const fetchAnalytics = async () => {
-    try {
-      const res = await getComplaintAnalytics();
-      setData(res.data.data);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [data, setData] =
+    useState<any[]>([]);
 
   useEffect(() => {
-    fetchAnalytics();
+
+    const fetchData =
+      async () => {
+
+        try {
+
+          const result =
+            await getComplaintAnalytics();
+
+          setData(result);
+
+        } catch (error) {
+
+          console.log(error);
+
+        }
+
+      };
+
+    fetchData();
+
   }, []);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-4xl font-bold text-white">
-        Analytics 📊
-      </h1>
-      <p className="text-slate-400">
-        Visualisasi status pengaduan warga
-      </p>
 
-      {loading ? (
-        <div className="text-white p-6 rounded-xl bg-white/5">
-          Loading...
+    <main className="min-h-screen bg-slate-950 p-8">
+
+      <h1
+        className="
+          mb-8
+          text-4xl
+          font-bold
+          text-white
+        "
+      >
+        Analytics
+      </h1>
+
+      <div
+        className="
+          rounded-3xl
+          border
+          border-white/10
+          bg-white/5
+          p-8
+        "
+      >
+
+        <div
+          className="
+            h-[450px]
+          "
+        >
+
+          <ResponsiveContainer>
+
+            <PieChart>
+
+              <Pie
+                data={data}
+                dataKey="count"
+                nameKey="status"
+                outerRadius={150}
+                label
+              >
+
+                {data.map(
+                  (
+                    entry,
+                    index
+                  ) => (
+
+                    <Cell
+                      key={index}
+                      fill={
+                        COLORS[
+                          index %
+                            COLORS.length
+                        ]
+                      }
+                    />
+
+                  )
+                )}
+
+              </Pie>
+
+              <Tooltip />
+
+            </PieChart>
+
+          </ResponsiveContainer>
+
         </div>
-      ) : (
-        <div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-2xl">
-          <ComplaintChart data={data} />
-        </div>
-      )}
-    </div>
+
+      </div>
+
+    </main>
+
   );
+
 }
