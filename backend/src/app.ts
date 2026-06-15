@@ -12,7 +12,11 @@ import routes from "./routes";
 const app = express();
 
 app.use(cors({
-  origin: ["https://pengaduan-opal.vercel.app", "http://localhost:3000"],
+  origin: [
+    "https://pengaduan-opal.vercel.app", 
+    "http://localhost:3000", 
+    "http://localhost:5000" // Tambahkan baris ini untuk izin akses lokal
+  ],
   credentials: true
 }));
 
