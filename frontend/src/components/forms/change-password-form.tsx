@@ -30,8 +30,7 @@ export const ChangePasswordForm =
 
    const onSubmit = async (values: ChangePasswordPayload) => {
   try {
-    // Tambahkan 'as any' setelah kata values 
-    await mutateAsync(values as any);
+    await mutateAsync(values);
 
     reset();
   } catch (error) {
