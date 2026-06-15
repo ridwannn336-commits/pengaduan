@@ -7,7 +7,7 @@ import morgan from "morgan";
 import hpp from "hpp";
 import path from "path";
 
-import routes from "@/routes";
+import routes from "./routes";
 
 const app = express();
 
