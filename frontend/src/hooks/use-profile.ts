@@ -1,38 +1,28 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
-
-import {
-  changePasswordService,
-  getProfileService,
-  updateProfileService,
+  changePassword,
+  getProfile,
+  updateProfile,
 } from "@/services/profile.service";
+import { ChangePasswordPayload } from "@/types/profile.type";
 
-export const useProfile =
-  () => {
-    return useQuery({
-      queryKey: ["profile"],
+export const useProfile = () => {
+  return useQuery({
+    queryKey: ["profile"],
+    queryFn: getProfile,
+  });
+};
 
-      queryFn:
-        getProfileService,
-    });
-  };
+export const useUpdateProfile = () => {
+  return useMutation({
+    mutationFn: updateProfile,
+  });
+};
 
-export const useUpdateProfile =
-  () => {
-    return useMutation({
-      mutationFn:
-        updateProfileService,
-    });
-  };
-
-export const useChangePassword =
-  () => {
-    return useMutation({
-      mutationFn:
-        changePasswordService,
-    });
-  };
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: (values: ChangePasswordPayload) => changePassword(values),
+  });
+};
